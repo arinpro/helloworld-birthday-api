@@ -1,0 +1,22 @@
+# Python cache and build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Environment files
+.env
+.env.*
+
+# IDE and editor folders
+.vscode/
+.idea/
+
+# Test cache
+.pytest_cache/
+
+# macOS system files
+.DS_Store
