@@ -1,0 +1,20 @@
+# Example NetworkPolicy: Allow only traffic from Ingress and same namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: hello-api-allow-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app: hello-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        # Allow from Ingress controllers (e.g., ALB)
+        - namespaceSelector: {}
+        # Allow from other pods in the same namespace
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8000

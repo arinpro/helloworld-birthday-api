@@ -1,0 +1,39 @@
+# Example CloudNativePG Replica Cluster manifest for Disaster Recovery
+# Requires WAL archiving (e.g., S3) enabled on the primary cluster.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: hello-postgres-replica 
+  namespace: default
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:15 
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 1Gi
+    storageClass: standard
+  bootstrap:
+    recovery:
+      source: hello-postgres  # Name of the primary cluster
+  replicaCluster:
+    enabled: true
+    source: hello-postgres
+    endpoint: hello-postgres-rw.default.svc.cluster.local:5432  # Service endpoint of the primary
+  externalClusters:
+    - name: hello-postgres
+      barmanObjectStore:
+        destinationPath: s3://<your-bucket>/hello-postgres/
+        endpointURL: https://s3.amazonaws.com  # Change for your S3 provider
+        awsCredentials:
+          accessKeyId:
+            name: s3-creds
+            key: ACCESS_KEY_ID
+          secretAccessKey:
+            name: s3-creds
+            key: SECRET_ACCESS_KEY
+        wal:
+          compression: gzip
+        data:
+          compression: gzip
+  monitoring:
+    enablePodMonitor: true

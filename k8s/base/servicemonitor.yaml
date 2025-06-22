@@ -1,0 +1,19 @@
+# Example ServiceMonitor for Prometheus Operator
+# Requires Prometheus Operator (kube-prometheus-stack) to be installed in your cluster.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: hello-api-servicemonitor
+  labels:
+    release: prometheus  # Adjust if your Prometheus release name is different
+spec:
+  selector:
+    matchLabels:
+      app: hello-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+  namespaceSelector:
+    matchNames:
+      - default  # Change if your app is in a different namespace

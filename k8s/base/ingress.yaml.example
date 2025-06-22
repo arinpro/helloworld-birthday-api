@@ -1,0 +1,23 @@
+# Example Ingress for AWS ALB (EKS only)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-api-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/healthcheck-path: /hello/healthz
+    alb.ingress.kubernetes.io/group.name: hello-api
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: hello-api
+                port:
+                  number: 8000

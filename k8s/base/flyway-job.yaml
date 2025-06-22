@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: flyway-migrate
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: flyway
+        image: flyway/flyway:10
+        env:
+        - name: FLYWAY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: hello-postgres-app
+              key: password
+        - name: FLYWAY_URL
+          valueFrom:
+            secretKeyRef:
+              name: hello-postgres-app
+              key: uri
+        volumeMounts:
+        - name: flyway-conf
+          mountPath: /flyway/conf
+        - name: flyway-sql
+          mountPath: /flyway/sql
+        command: ["flyway", "-configFiles=/flyway/conf/flyway.conf", "migrate"]
+      volumes:
+      - name: flyway-conf
+        configMap:
+          name: flyway-conf
+      - name: flyway-sql
+        configMap:
+          name: flyway-sql
