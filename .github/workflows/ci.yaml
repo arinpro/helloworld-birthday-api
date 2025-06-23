@@ -1,0 +1,54 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      FLYWAY_PASSWORD: postgres
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+    - name: Lint
+      run: |
+        pip install flake8
+        flake8 app
+    - name: Validate Flyway SQL
+      uses: docker://flyway/flyway:10
+      with:
+        args: -configFiles=flyway/flyway.conf -user=postgres -password=postgres -url=jdbc:postgresql://localhost:5432/postgres migrate
+    - name: Test
+      run: make test
+    - name: Build Docker image
+      run: docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push Docker image
+      run: docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
