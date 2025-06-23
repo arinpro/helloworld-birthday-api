@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-world-api-dev
+  namespace: argocd
+  annotations:
+    # Update the image-list annotation to your own GHCR repo before deploying
+    argocd-image-updater.argoproj.io/image-list: ghcr.io/YOUR_GITHUB_USERNAME/helloworld-birthday-api
+    argocd-image-updater.argoproj.io/helloworld-birthday-api.update-strategy: latest
+    argocd-image-updater.argoproj.io/helloworld-birthday-api.allow-tags: regexp:^.*$
+    argocd-image-updater.argoproj.io/write-back-method: git
+spec:
+  project: default
+  source:
+    # Update this to your own repository URL before deploying
+    repoURL: 'https://github.com/YOUR_GITHUB_USERNAME/helloworld-birthday-api.git'
+    targetRevision: main
+    path: k8s/overlays/dev
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: hello-world-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
