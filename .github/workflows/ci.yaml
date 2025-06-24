@@ -39,7 +39,13 @@ jobs:
     - name: Validate Flyway SQL
       uses: docker://flyway/flyway:10
       with:
-        args: -configFiles=flyway/flyway.conf -user=postgres -password=postgres -url=jdbc:postgresql://localhost:5432/postgres migrate
+        args: >-
+          -configFiles=flyway/flyway.conf
+          -user=postgres
+          -password=postgres
+          -url=jdbc:postgresql://postgres:5432/postgres
+          -locations=filesystem:/github/workspace/flyway/sql
+          migrate
     - name: Test
       run: make test
     - name: Build Docker image
