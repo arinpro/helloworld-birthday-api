@@ -21,9 +21,14 @@ def root():
 
 
 @app.put("/hello/{username}")
-def put_birthday(username: str = Path(..., pattern="^[A-Za-z]+$"), payload: schemas.UserCreate = ...):
+def put_birthday(
+    username: str = Path(..., pattern="^[A-Za-z]+$"),
+    payload: schemas.UserCreate = ...
+):
     try:
-        crud.create_or_update_user(username, payload.dateOfBirth)
+        crud.create_or_update_user(
+            username, payload.dateOfBirth
+        )
         return JSONResponse(status_code=204, content=None)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -17,6 +17,9 @@ migrate:
 build:
 	eval "$$(minikube docker-env)" && docker build -t helloworld-birthday-api:latest .
 
+lint:
+	flake8 app/
+
 .PHONY: minikube-deploy minikube-destroy
 
 minikube-deploy:
