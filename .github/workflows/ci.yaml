@@ -40,7 +40,6 @@ jobs:
       uses: docker://flyway/flyway:10
       with:
         args: >-
-          -configFiles=flyway/flyway.conf
           -user=postgres
           -password=postgres
           -url=jdbc:postgresql://postgres:5432/postgres
