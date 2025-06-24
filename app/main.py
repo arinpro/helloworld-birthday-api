@@ -9,13 +9,16 @@ app = FastAPI()
 
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
+
 @app.on_event("startup")
 def on_startup():
     db.init_db()
 
+
 @app.get("/")
 def root():
     return {"message": "Welcome to the Hello World Birthday API!"}
+
 
 @app.put("/hello/{username}")
 def put_birthday(username: str = Path(..., pattern="^[A-Za-z]+$"), payload: schemas.UserCreate = ...):
@@ -27,9 +30,11 @@ def put_birthday(username: str = Path(..., pattern="^[A-Za-z]+$"), payload: sche
     except SQLAlchemyError:
         raise HTTPException(status_code=500, detail="Database error")
 
+
 @app.get("/hello/healthz")
 def healthz():
     return {"status": "ok"}
+
 
 @app.get("/hello/{username}")
 def get_birthday(username: str = Path(..., pattern="^[A-Za-z]+$")):

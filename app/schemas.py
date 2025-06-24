@@ -1,6 +1,7 @@
 from pydantic import BaseModel, field_validator
 from datetime import date
 
+
 class UserCreate(BaseModel):
     dateOfBirth: date
 
@@ -10,6 +11,7 @@ class UserCreate(BaseModel):
         if v >= date.today():
             raise ValueError('dateOfBirth must be before today')
         return v
+
 
 class UserResponse(BaseModel):
     message: str
