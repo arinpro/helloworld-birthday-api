@@ -17,3 +17,6 @@ data:
         api_url: https://ghcr.io
         prefix: ghcr.io
         credentials: pullsecret:argocd/ghcr-creds
+  git.update-strategy: direct
+  git.commit-message-template: |
+    chore: update image to {{ .NewTag }} [skip ci]
